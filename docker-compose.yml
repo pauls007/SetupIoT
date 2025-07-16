@@ -1,0 +1,35 @@
+services:
+  nodered:
+    image: nodered/node-red
+    ports:
+      - "${NODE_RED_PORT}:1880"
+    volumes:  
+      - nodered_data:/data
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: 
+      - "${GRAFANA_PORT}:3000"
+    volumes:
+      - grafana_data:/data
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+    restart: unless-stopped
+
+volumes:
+ nodered_data:
+   driver: local		# ใช้ driver ปกติของ Docker
+   driver_opts:
+     type: none			# ไม่ต้องใช้ fs พิเศษ
+     o: bind
+     device: ${NODERED_DATA_PATH}	# path จริงที่ชี้ไปยัง OneDrive
+
+ grafana_data:
+   driver: local
+   driver_opts:
+     type: none
+     o: bind
+     device: ${GRAFANA_DATA_PATH}
+
