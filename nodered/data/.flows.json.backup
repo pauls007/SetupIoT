@@ -10,7 +10,7 @@
         "id": "c2e45a34cd7be5b4",
         "type": "mqtt-broker",
         "name": "test",
-        "broker": "172.26.240.204",
+        "broker": "192.168.0.154",
         "port": 1883,
         "clientid": "",
         "autoConnect": true,
@@ -98,7 +98,9 @@
         "x": 230,
         "y": 280,
         "wires": [
-            []
+            [
+                "a15a29d48aec142b"
+            ]
         ]
     },
     {
@@ -117,6 +119,22 @@
         "broker": "c2e45a34cd7be5b4",
         "x": 610,
         "y": 260,
+        "wires": []
+    },
+    {
+        "id": "a15a29d48aec142b",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 2",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 280,
         "wires": []
     }
 ]

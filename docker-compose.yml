@@ -27,6 +27,8 @@ services:
     volumes:
 #      - ./mosquitto/config:/mosquitto/config
        - C:/docker/iot/mosquitto/config:/mosquitto/config
+       - C:/docker/iot/mosquitto/data:/mosquitto/data
+       - C:/docker/iot/mosquitto/log:/mosquitto/log
     restart: unless-stopped
 
 volumes:
