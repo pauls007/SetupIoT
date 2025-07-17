@@ -5,18 +5,18 @@ services:
       - "${NODE_RED_PORT}:1880"
     volumes:  
       - nodered_data:/data
-    restart: unless-stopped
+    restart: unless-stopped #เป็นการกำหนดให้ container นี้จะ restart อัตโนมัติถ้ามีปัญหา
 
   grafana:
     image: grafana/grafana:latest
     ports: 
-      - "${GRAFANA_PORT}:3000"
+      - "${GRAFANA_PORT}:3000" #เป็นกำหนด port ที่ใช้ในการเรียกใช้งาน Grafana ซึ่งจะถูกแมพไปยัง port กับไฟล์ .env ด้วยนะ เพราะตอนนี้เป็นการเรียกใช้งาน 3001
     volumes:
-      - grafana_data:/data
+      - grafana_data:/data #เป็นการ map path สำหรับเก็บข้อมูลของ Grafana เช่น dashboard, plugins, และการตั้งค่าต่างๆ ให้อยู่ในโฟลเดอร์ data โดยชื่อที่ใช้ในการ map คือ grafana_data
     environment:
       - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-    restart: unless-stopped
+    restart: unless-stopped #เป็นการกำหนดให้ container นี้จะ restart อัตโนมัติถ้ามีปัญหา
 
   mosquitto:
     image: eclipse-mosquitto:latest
@@ -26,10 +26,12 @@ services:
       - "9001:9001"
     volumes:
 #      - ./mosquitto/config:/mosquitto/config
-       - C:/docker/iot/mosquitto/config:/mosquitto/config
-       - C:/docker/iot/mosquitto/data:/mosquitto/data
-       - C:/docker/iot/mosquitto/log:/mosquitto/log
-    restart: unless-stopped
+# นี่เป็นการ map path ระหว่างตัว host (เครื่องที่เรารัน docker) กับ container
+# ฝั่งซ้ายคือ path บน host และฝั่งขวาคือ path บน container
+       - C:/docker/iot/mosquitto/config:/mosquitto/config # กำหนด path สำหรับ config เช่น ตัว password, port, protocol ที่ใช้ในการทำงาน
+       - C:/docker/iot/mosquitto/data:/mosquitto/data # กำหนด path สำหรับ data เช่น เป็นการเก็บตัว message ที่ส่งผ่าน MQTT
+       - C:/docker/iot/mosquitto/log:/mosquitto/log # กำหนด path สำหรับ log เช่น log ของการเชื่อมต่อ, การส่ง message
+    restart: unless-stopped #เป็นการกำหนดให้ container นี้จะ restart อัตโนมัติถ้ามีปัญหา
 
 volumes:
  nodered_data:
