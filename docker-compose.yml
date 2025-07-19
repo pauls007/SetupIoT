@@ -1,6 +1,7 @@
 services:
   nodered:
     image: nodered/node-red
+    container_name: nodered
     ports:
       - "${NODE_RED_PORT}:1880"
     volumes:  
@@ -9,6 +10,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
+    container_name: grafana
     ports: 
       - "${GRAFANA_PORT}:3000" #เป็นกำหนด port ที่ใช้ในการเรียกใช้งาน Grafana ซึ่งจะถูกแมพไปยัง port กับไฟล์ .env ด้วยนะ เพราะตอนนี้เป็นการเรียกใช้งาน 3001
     volumes:
@@ -33,6 +35,40 @@ services:
        - C:/docker/iot/mosquitto/log:/mosquitto/log # กำหนด path สำหรับ log เช่น log ของการเชื่อมต่อ, การส่ง message
     restart: unless-stopped #เป็นการกำหนดให้ container นี้จะ restart อัตโนมัติถ้ามีปัญหา
 
+  influxdb2:
+    container_name: influxdb2
+    image: influxdb:2
+    ports:
+      - 8086:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup   #เริ่มการ set up ตัว influxs
+      DOCKER_INFLUXDB_INIT_USERNAME_FILE: /run/secrets/influxdb2-admin-username  #การให้ docker เข้าไปหา file USENAME จาก  /run/secrets/influxdb2-admin-username ซึ่งตรงนี้มันเป็น path ที่อยู่ข้างใน container
+      DOCKER_INFLUXDB_INIT_PASSWORD_FILE: /run/secrets/influxdb2-admin-password #การให้ docker เข้าไปหา file password จาก  /run/secrets/influxdb2-admin-password ซึ่งตรงนี้มันเป็น path ที่อยู่ข้างใน container
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN_FILE: /run/secrets/influxdb2-admin-token #การให้ docker เข้าไปหา file Token จาก  /run/secrets/influxdb2-admin-token ซึ่งตรงนี้มันเป็น path ที่อยู่ข้างใน container
+      DOCKER_INFLUXDB_INIT_ORG: docs   #เป็นการกำหนดตัว ORG ให้กับฐานข้อมูล
+      DOCKER_INFLUXDB_INIT_BUCKET: home #เป็นการตั้งชื่อ bucket ให้กับฐานข้อมูล
+    secrets:		#เป็นการบอกว่าตัว secrets ของ service มีการใช้ตัวไหนบ้าง
+      - influxdb2-admin-username
+      - influxdb2-admin-password
+      - influxdb2-admin-token
+    volumes: #ตรงนี้เป็นการสร้าง volume ของ data โดย path ของเครื่อง 
+        #ในส่วนของ data ในฝั่ง host คือ C:/docker/iot/influxdb2/data ส่วน path ของ dockerในการเก็บข้อมูลอยู่ที่ /var/lib/influxdb2
+      - C:/docker/iot/influxdb2/data:/var/lib/influxdb2    
+      #- influxdb2-data:/var/lib/influxdb2
+
+        #ในการของการเก็บค่า config โดยอ้างอิงจาก path ของ host จาก path: C:/docker/iot/influxdb2/config ส่วน path ของ docker ที่จัดการไฟล์ config ของ host จาก path คือ C:/docker/iot/influxdb2/config
+      - C:/docker/iot/influxdb2/config:/etc/influxdb2
+    restart: unless-stopped
+
+secrets:
+ influxdb2-admin-username:
+    file: C:/docker/iot/influxdb2/secrets/influxdb2-admin-username
+ influxdb2-admin-password:
+    file: C:/docker/iot/influxdb2/secrets/influxdb2-admin-password
+ influxdb2-admin-token:
+    file: C:/docker/iot/influxdb2/secrets/influxdb2-admin-token
+
+
 volumes:
  nodered_data:
    driver: local		# ใช้ driver ปกติของ Docker
@@ -47,3 +83,9 @@ volumes:
      type: none
      o: bind
      device: ${GRAFANA_DATA_PATH}
+ influxdb2-data:
+   driver: local
+   driver_opts:
+     type: none
+     o: bind
+     device: C:/docker/iot/influxdb2/data
