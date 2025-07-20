@@ -53,8 +53,10 @@ services:
       - influxdb2-admin-token
     volumes: #ตรงนี้เป็นการสร้าง volume ของ data โดย path ของเครื่อง 
         #ในส่วนของ data ในฝั่ง host คือ C:/docker/iot/influxdb2/data ส่วน path ของ dockerในการเก็บข้อมูลอยู่ที่ /var/lib/influxdb2
-      - C:/docker/iot/influxdb2/data:/var/lib/influxdb2    
-      #- influxdb2-data:/var/lib/influxdb2
+      #- C:/docker/iot/influxdb2/data:/var/lib/influxdb2    
+      #ในส่วนของการสร้าง path ผ่านทาง name volume ของ docker โดยใช้ชื่อว่า influxdb2-data 
+      #โดยเก็บอยู่ใน path ของ host ที่ชื่อว่า C:/docker/iot/influxdb2/data
+      - influxdb2-data:/var/lib/influxdb2
 
         #ในการของการเก็บค่า config โดยอ้างอิงจาก path ของ host จาก path: C:/docker/iot/influxdb2/config ส่วน path ของ docker ที่จัดการไฟล์ config ของ host จาก path คือ C:/docker/iot/influxdb2/config
       - C:/docker/iot/influxdb2/config:/etc/influxdb2
@@ -83,6 +85,7 @@ volumes:
      type: none
      o: bind
      device: ${GRAFANA_DATA_PATH}
+
  influxdb2-data:
    driver: local
    driver_opts:
