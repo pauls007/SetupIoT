@@ -9,7 +9,7 @@
     {
         "id": "c2e45a34cd7be5b4",
         "type": "mqtt-broker",
-        "name": "test",
+        "name": "MQTT server",
         "broker": "192.168.0.154",
         "port": 1883,
         "clientid": "",
@@ -38,7 +38,61 @@
         "sessionExpiry": ""
     },
     {
-        "id": "23712b7bf3f6f96b",
+        "id": "be726512ffad4ef0",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "Influxdb2",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://localhost:8086",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "1d5d012446d0fdd1",
+        "type": "mqtt in",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "hello world",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "c2e45a34cd7be5b4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 300,
+        "y": 120,
+        "wires": [
+            [
+                "46e1b8790a285cb6"
+            ]
+        ]
+    },
+    {
+        "id": "5bbacd55cc5fbd32",
+        "type": "mqtt out",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "topic": "hello world",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "c2e45a34cd7be5b4",
+        "x": 530,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "348569e3fa64b84c",
         "type": "inject",
         "z": "f6f2187d.f17ca8",
         "name": "",
@@ -56,18 +110,18 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "iso",
+        "payload": "",
         "payloadType": "date",
-        "x": 120,
-        "y": 100,
+        "x": 300,
+        "y": 220,
         "wires": [
             [
-                "8aa8697644f40be8"
+                "5bbacd55cc5fbd32"
             ]
         ]
     },
     {
-        "id": "8aa8697644f40be8",
+        "id": "46e1b8790a285cb6",
         "type": "debug",
         "z": "f6f2187d.f17ca8",
         "name": "debug 1",
@@ -78,16 +132,83 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 360,
-        "y": 100,
+        "x": 520,
+        "y": 120,
         "wires": []
     },
     {
-        "id": "400156d32ccbd969",
+        "id": "d6a77d7bfca6e10e",
+        "type": "influxdb out",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "be726512ffad4ef0",
+        "name": "",
+        "measurement": "temperature values",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "nodered",
+        "bucket": "nodered_demo_bucket",
+        "x": 680,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "cafe4f796b7107d7",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 320,
+        "wires": [
+            [
+                "9f342fa509feba17"
+            ]
+        ]
+    },
+    {
+        "id": "9f342fa509feba17",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "random temperature function ",
+        "func": "let rnd = parseInt((35-20+1)*Math.random()+20);\nmsg.payload=rnd;\nnode.warn(rnd);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 320,
+        "wires": [
+            [
+                "dbe9323cc3ee637e"
+            ]
+        ]
+    },
+    {
+        "id": "aba5e61d5b496d77",
         "type": "mqtt in",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "topic": "hello",
+        "topic": "Temperture",
         "qos": "0",
         "datatype": "auto-detect",
         "broker": "c2e45a34cd7be5b4",
@@ -95,46 +216,30 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 230,
-        "y": 280,
+        "x": 310,
+        "y": 460,
         "wires": [
             [
-                "a15a29d48aec142b"
+                "d6a77d7bfca6e10e"
             ]
         ]
     },
     {
-        "id": "3fec7c118fc90d2b",
+        "id": "dbe9323cc3ee637e",
         "type": "mqtt out",
         "z": "f6f2187d.f17ca8",
         "name": "",
-        "topic": "test",
-        "qos": "",
-        "retain": "",
+        "topic": "Temperture",
+        "qos": "0",
+        "retain": "false",
         "respTopic": "",
         "contentType": "",
         "userProps": "",
         "correl": "",
         "expiry": "",
         "broker": "c2e45a34cd7be5b4",
-        "x": 610,
-        "y": 260,
-        "wires": []
-    },
-    {
-        "id": "a15a29d48aec142b",
-        "type": "debug",
-        "z": "f6f2187d.f17ca8",
-        "name": "debug 2",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 420,
-        "y": 280,
+        "x": 770,
+        "y": 320,
         "wires": []
     }
 ]
